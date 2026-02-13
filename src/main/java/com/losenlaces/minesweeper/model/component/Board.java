@@ -4,8 +4,6 @@ import com.losenlaces.minesweeper.model.IBoard;
 import com.losenlaces.minesweeper.model.ICell;
 import com.losenlaces.minesweeper.model.IGame;
 
-import java.util.Arrays;
-
 public class Board implements IBoard {
 
     private final IGame game;
@@ -13,6 +11,7 @@ public class Board implements IBoard {
     private final int rows;
     private final int columns;
     private final int mines;
+    private boolean initialized;
 
     public Board(IGame game, int rows, int columns, int mines) {
         this.game = game;
@@ -20,7 +19,9 @@ public class Board implements IBoard {
         this.columns = Math.clamp(columns, 2, 9);
         this.cells = new ICell[rows][columns];
         this.mines = mines;
-        initializeCells(mines);
+        this.initialized = false;
+        // Create empty cells initially
+        createEmptyCells();
     }
 
     @Override
@@ -56,29 +57,55 @@ public class Board implements IBoard {
 
     @Override
     public void refill() {
-        for (ICell[] cell : cells) Arrays.fill(cell, null);
-        initializeCells(mines);
+        initialized = false;
+        createEmptyCells();
+    }
+    
+    public boolean isInitialized() {
+        return initialized;
+    }
+    
+    public void initializeWithSafeZone(int safeRow, int safeCol) {
+        if (initialized) return;
+        placeMinesAvoidingSafeZone(safeRow, safeCol);
+        calculateAllAdjacentMines();
+        initialized = true;
+    }
+    
+    private void createEmptyCells() {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                cells[row][col] = new Cell(game, row, col, false);
+            }
+        }
     }
 
-    private void initializeCells(int mines) {
-        // Place mines randomly
+    private void placeMinesAvoidingSafeZone(int safeRow, int safeCol) {
         int placedMines = 0;
         while (placedMines < mines) {
             int row = (int) (Math.random() * rows);
             int col = (int) (Math.random() * columns);
-            if (cells[row][col] == null) {
-                cells[row][col] = new Cell(game, row, col, true);
-                placedMines++;
-            }
+            
+            // Check if this position is in the safe zone (clicked cell + neighbors)
+            if (isInSafeZone(row, col, safeRow, safeCol)) continue;
+            
+            // Check if already a mine
+            if (cells[row][col].isMine()) continue;
+            
+            // Replace cell with a mine
+            cells[row][col] = new Cell(game, row, col, true);
+            placedMines++;
         }
-        // Fill remaining cells
+    }
+    
+    private boolean isInSafeZone(int row, int col, int safeRow, int safeCol) {
+        return Math.abs(row - safeRow) <= 1 && Math.abs(col - safeCol) <= 1;
+    }
+    
+    private void calculateAllAdjacentMines() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
-                if (cells[row][col] == null) {
-                    cells[row][col] = new Cell(game, row, col, false);
-                    var cell = cells[row][col];
-                    cell.getAdjacentMines();
-                }
+                ((Cell) cells[row][col]).calculateAdjacentMines(cells);
             }
         }
     }

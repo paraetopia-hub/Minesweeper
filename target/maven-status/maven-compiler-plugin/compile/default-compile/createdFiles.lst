@@ -1,0 +1,11 @@
+com\losenlaces\minesweeper\model\component\Board.class
+com\losenlaces\minesweeper\model\ICell.class
+com\losenlaces\minesweeper\Main.class
+com\losenlaces\minesweeper\controller\GameController.class
+com\losenlaces\minesweeper\model\component\Cell.class
+com\losenlaces\minesweeper\model\IBoard.class
+com\losenlaces\minesweeper\view\ConsoleUI$1.class
+com\losenlaces\minesweeper\model\IGame.class
+com\losenlaces\minesweeper\model\GameState.class
+com\losenlaces\minesweeper\view\ConsoleUI.class
+com\losenlaces\minesweeper\model\component\Game.class

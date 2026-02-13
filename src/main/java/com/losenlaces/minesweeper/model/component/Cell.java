@@ -12,6 +12,7 @@ public class Cell implements ICell {
     private boolean isRevealed;
     private boolean isFlagged;
     private int adjacentMines;
+    private boolean adjacentMinesCalculated;
 
     public Cell(IGame game, int row, int column, boolean isMine) {
         this.game = game;
@@ -21,6 +22,7 @@ public class Cell implements ICell {
         this.isRevealed = false;
         this.isFlagged = false;
         this.adjacentMines = 0;
+        this.adjacentMinesCalculated = false;
     }
 
     @Override
@@ -56,17 +58,20 @@ public class Cell implements ICell {
     @Override
     public int getAdjacentMines() {
         if (isMine) return -1;
-        if (adjacentMines == 0) {
-            ICell[][] cells = game.getBoard().getCells();
-            for (int r = row - 1; r <= row + 1; r++) {
-                for (int c = column - 1; c <= column + 1; c++) {
-                    if (r >= 0 && r < cells.length && c >= 0 && c < cells[0].length) {
-                        if (cells[r][c].isMine()) adjacentMines++;
-                    }
+        return adjacentMines;
+    }
+
+    public void calculateAdjacentMines(ICell[][] cells) {
+        if (adjacentMinesCalculated || isMine) return;
+        adjacentMines = 0;
+        for (int r = row - 1; r <= row + 1; r++) {
+            for (int c = column - 1; c <= column + 1; c++) {
+                if (r >= 0 && r < cells.length && c >= 0 && c < cells[0].length) {
+                    if (r != row || c != column) if (cells[r][c].isMine()) adjacentMines++;
                 }
             }
         }
-        return adjacentMines;
+        adjacentMinesCalculated = true;
     }
 
     @Override
@@ -83,6 +88,5 @@ public class Cell implements ICell {
     public void reveal() {
         if (isFlagged || isRevealed) return;
         this.isRevealed = true;
-        game.revealCell(row, column);
     }
 }
