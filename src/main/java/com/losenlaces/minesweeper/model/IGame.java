@@ -9,3 +9,4 @@ public interface IGame {
     void revealMines();
     void restart();
 }
+
