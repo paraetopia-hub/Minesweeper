@@ -1,7 +1,7 @@
 package com.losenlaces.minesweeper.model;
 
 public interface ICell {
-    IGame getGame();
+    IBoard getBoard();
     int getRow();
     int getColumn();
     boolean isMine();

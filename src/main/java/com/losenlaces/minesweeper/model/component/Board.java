@@ -75,7 +75,7 @@ public class Board implements IBoard {
     private void createEmptyCells() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
-                cells[row][col] = new Cell(game, row, col, false);
+                cells[row][col] = new Cell(this, row, col, false);
             }
         }
     }
@@ -93,7 +93,7 @@ public class Board implements IBoard {
             if (cells[row][col].isMine()) continue;
             
             // Replace cell with a mine
-            cells[row][col] = new Cell(game, row, col, true);
+            cells[row][col] = new Cell(this, row, col, true);
             placedMines++;
         }
     }
@@ -105,7 +105,7 @@ public class Board implements IBoard {
     private void calculateAllAdjacentMines() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
-                ((Cell) cells[row][col]).calculateAdjacentMines(cells);
+                ((Cell) cells[row][col]).calculateAdjacentMines();
             }
         }
     }

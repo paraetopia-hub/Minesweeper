@@ -1,11 +1,11 @@
 package com.losenlaces.minesweeper.model.component;
 
+import com.losenlaces.minesweeper.model.IBoard;
 import com.losenlaces.minesweeper.model.ICell;
-import com.losenlaces.minesweeper.model.IGame;
 
 public class Cell implements ICell {
 
-    private final IGame game;
+    private final IBoard board;
     private final int row;
     private final int column;
     private final boolean isMine;
@@ -14,8 +14,8 @@ public class Cell implements ICell {
     private int adjacentMines;
     private boolean adjacentMinesCalculated;
 
-    public Cell(IGame game, int row, int column, boolean isMine) {
-        this.game = game;
+    public Cell(IBoard board, int row, int column, boolean isMine) {
+        this.board = board;
         this.row = row;
         this.column = column;
         this.isMine = isMine;
@@ -26,8 +26,8 @@ public class Cell implements ICell {
     }
 
     @Override
-    public IGame getGame() {
-        return game;
+    public IBoard getBoard() {
+        return board;
     }
 
     @Override
@@ -61,12 +61,13 @@ public class Cell implements ICell {
         return adjacentMines;
     }
 
-    public void calculateAdjacentMines(ICell[][] cells) {
+    public void calculateAdjacentMines() {
         if (adjacentMinesCalculated || isMine) return;
         adjacentMines = 0;
+        ICell[][] cells = board.getCells();
         for (int r = row - 1; r <= row + 1; r++) {
             for (int c = column - 1; c <= column + 1; c++) {
-                if (r >= 0 && r < cells.length && c >= 0 && c < cells[0].length) {
+                if (r >= 0 && r < board.getCells().length && c >= 0 && c < cells[0].length) {
                     if (r != row || c != column) if (cells[r][c].isMine()) adjacentMines++;
                 }
             }
